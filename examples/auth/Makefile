@@ -26,7 +26,10 @@ clean:
 $(AUTH_WASM):
 	$(MAKE) -C ../../auth build
 
-$(EXAMPLE_WASM): $(CONFIG) $(SRC) $(WIT)
+wit/deps: wkg.toml wit/world.wit
+	wkg wit fetch
+
+$(EXAMPLE_WASM): $(CONFIG) $(SRC) $(WIT) wit/deps
 	cargo build --release --target wasm32-wasip2
 
 $(COMPOSED_WASM): $(EXAMPLE_WASM) $(AUTH_WASM)
