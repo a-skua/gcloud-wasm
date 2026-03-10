@@ -1,3 +1,4 @@
+run-name: Release ${{ inputs.version }}
 name: Release
 
 on:
@@ -7,45 +8,65 @@ on:
         description: "Release version (e.g. 0.1.0)"
         required: true
 
-permissions:
-  contents: write
-  packages: write
+permissions: {}
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Install Rust with wasm32-wasip2 target
-        run: rustup target add wasm32-wasip2
+      - run: rustup target add wasm32-wasip2
 
-      - name: Build auth component
-        run: cargo build --release --target wasm32-wasip2
+      - run: cargo build --release --target wasm32-wasip2
         working-directory: auth
 
-      - name: Setup ORAS
-        uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # v1.2.4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: gcloud_auth.wasm
+          path: auth/target/wasm32-wasip2/release/gcloud_auth.wasm
 
-      - name: Login to ghcr.io
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: gcloud_auth.wasm
 
-      - name: Create OCI config
-        run: |
-          echo '{"architecture":"wasm","os":"wasip2"}' > config.json
+      - uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # v1.2.4
 
-      - name: Push auth to ghcr.io
-        run: |
+      - run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - run: echo '{"architecture":"wasm","os":"wasip2"}' > config.json
+
+      - run: |
           oras push \
             --config config.json:application/vnd.wasm.config.v0+json \
             ghcr.io/a-skua/gcloud/auth:${{ inputs.version }} \
-            auth/target/wasm32-wasip2/release/gcloud_auth.wasm:application/wasm
+            gcloud_auth.wasm:application/wasm
 
-      - name: Create GitHub Release
-        run: |
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          name: gcloud_auth.wasm
+
+      - run: |
           gh release create "${{ inputs.version }}" \
             --title "${{ inputs.version }}" \
             --generate-notes \
-            auth/target/wasm32-wasip2/release/gcloud_auth.wasm
+            gcloud_auth.wasm
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
