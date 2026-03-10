@@ -1,0 +1,5 @@
+package gcloud:example-auth@0.1.0;
+
+world app {
+    import gcloud:auth/token-source@0.1.0;
+}
