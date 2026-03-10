@@ -1,0 +1,51 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 0.1.0)"
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install Rust with wasm32-wasip2 target
+        run: rustup target add wasm32-wasip2
+
+      - name: Build auth component
+        run: cargo build --release --target wasm32-wasip2
+        working-directory: auth
+
+      - name: Setup ORAS
+        uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # v1.2.4
+
+      - name: Login to ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Create OCI config
+        run: |
+          echo '{"architecture":"wasm","os":"wasip2"}' > config.json
+
+      - name: Push auth to ghcr.io
+        run: |
+          oras push \
+            --config config.json:application/vnd.wasm.config.v0+json \
+            ghcr.io/a-skua/gcloud/auth:${{ inputs.version }} \
+            auth/target/wasm32-wasip2/release/gcloud_auth.wasm:application/wasm
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "${{ inputs.version }}" \
+            --title "${{ inputs.version }}" \
+            --generate-notes \
+            auth/target/wasm32-wasip2/release/gcloud_auth.wasm
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
