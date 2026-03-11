@@ -1,0 +1,25 @@
+package gcloud:storage@0.1.0;
+
+interface types {
+    use gcloud:auth/types@0.1.0.{error as auth-error};
+
+    record bucket {
+        name: string,
+    }
+
+    variant error {
+        auth(auth-error),
+        request-failed(string),
+    }
+}
+
+interface buckets {
+    use types.{bucket, error};
+
+    list-buckets: func(project: string) -> result<list<bucket>, error>;
+}
+
+world storage-provider {
+    import gcloud:auth/token-source@0.1.0;
+    export buckets;
+}

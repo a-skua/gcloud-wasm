@@ -1,0 +1,5 @@
+package example:storage@0.1.0;
+
+world app {
+    import gcloud:storage/buckets@0.1.0;
+}

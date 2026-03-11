@@ -1,0 +1,2 @@
+[overrides]
+"gcloud:storage" = { path = "../../storage/wit" }
