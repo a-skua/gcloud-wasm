@@ -8,7 +8,6 @@ AUTH_WASM_SRC := ghcr.io/a-skua/gcloud/auth:0.1.0
 AUTH_WASM := target/wasm32-wasip2/release/gcloud_auth_0_1_0.wasm
 STORAGE_WASM_SRC := ghcr.io/a-skua/gcloud/storage:0.1.0
 STORAGE_WASM := target/wasm32-wasip2/release/gcloud_storage_0_1_0.wasm
-COMPOSED_STORAGE_WASM := target/wasm32-wasip2/release/composed_storage.wasm
 EXAMPLE_WASM := target/wasm32-wasip2/release/$(PACKAGE_NAME).wasm
 COMPOSED_WASM := target/wasm32-wasip2/release/composed.wasm
 
@@ -36,8 +35,9 @@ $(STORAGE_WASM):
 $(EXAMPLE_WASM): $(CONFIG) $(SRC) $(WIT)
 	cargo build --release --target wasm32-wasip2
 
-$(COMPOSED_STORAGE_WASM): $(STORAGE_WASM) $(AUTH_WASM)
-	wac plug $< --plug $(word 2, $^) -o $@
-
-$(COMPOSED_WASM): $(EXAMPLE_WASM) $(COMPOSED_STORAGE_WASM)
-	wac plug $< --plug $(word 2, $^) -o $@
+$(COMPOSED_WASM): compose.wac $(EXAMPLE_WASM) $(AUTH_WASM) $(STORAGE_WASM)
+	wac compose compose.wac \
+		-d "gcloud:auth=$(AUTH_WASM)" \
+		-d "gcloud:storage=$(STORAGE_WASM)" \
+		-d "example:storage=$(EXAMPLE_WASM)" \
+		-o $@

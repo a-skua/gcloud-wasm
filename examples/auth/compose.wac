@@ -1,0 +1,9 @@
+package example:composition;
+
+let auth = new gcloud:auth { ... };
+let app = new example:auth {
+    "gcloud:auth/token-source@0.1.0": auth["gcloud:auth/token-source@0.1.0"],
+    ...
+};
+
+export app...;

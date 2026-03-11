@@ -33,5 +33,8 @@ wit/deps: wkg.toml wit/world.wit
 $(EXAMPLE_WASM): $(CONFIG) $(SRC) $(WIT) wit/deps
 	cargo build --release --target wasm32-wasip2
 
-$(COMPOSED_WASM): $(EXAMPLE_WASM) $(AUTH_WASM)
-	wac plug $(EXAMPLE_WASM) --plug $(AUTH_WASM) -o $(COMPOSED_WASM)
+$(COMPOSED_WASM): compose.wac $(EXAMPLE_WASM) $(AUTH_WASM)
+	wac compose compose.wac \
+		-d "gcloud:auth=$(AUTH_WASM)" \
+		-d "example:auth=$(EXAMPLE_WASM)" \
+		-o $@
