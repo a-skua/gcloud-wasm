@@ -38,17 +38,16 @@ jobs:
         with:
           name: gcloud_auth.wasm
 
-      - uses: oras-project/setup-oras@22ce207df3b08e061f537244349aac6ae1d214f6 # v1.2.4
+      - run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-      - run: echo "${{ secrets.GITHUB_TOKEN }}" | oras login ghcr.io -u ${{ github.actor }} --password-stdin
-
-      - run: echo '{"architecture":"wasm","os":"wasip2"}' > config.json
+      - run: cargo binstall wkg -y
 
       - run: |
-          oras push \
-            --config config.json:application/vnd.wasm.config.v0+json \
+          wkg oci push \
+            -u ${{ github.actor }} \
+            -p ${{ secrets.GITHUB_TOKEN }} \
             ghcr.io/a-skua/gcloud/auth:${{ inputs.version }} \
-            gcloud_auth.wasm:application/wasm
+            gcloud_auth.wasm
 
   release:
     needs: build
