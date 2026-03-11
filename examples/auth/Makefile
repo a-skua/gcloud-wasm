@@ -4,7 +4,8 @@ WIT := $(shell find wit -name "*.wit")
 
 PACKAGE_NAME := $(shell cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].name')
 
-AUTH_WASM := ../../auth/target/wasm32-wasip2/release/gcloud_auth.wasm
+AUTH_WASM_SRC := ghcr.io/a-skua/gcloud/auth:0.1.0
+AUTH_WASM := target/wasm32-wasip2/release/gcloud_auth_0_1_0.wasm
 EXAMPLE_WASM := target/wasm32-wasip2/release/$(PACKAGE_NAME).wasm
 COMPOSED_WASM := target/wasm32-wasip2/release/composed.wasm
 
@@ -24,7 +25,7 @@ clean:
 	cargo clean
 
 $(AUTH_WASM):
-	$(MAKE) -C ../../auth build
+	wkg oci pull -o $@ $(AUTH_WASM_SRC)
 
 wit/deps: wkg.toml wit/world.wit
 	wkg wit fetch
