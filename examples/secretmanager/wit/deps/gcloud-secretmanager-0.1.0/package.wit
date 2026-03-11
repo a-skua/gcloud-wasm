@@ -1,0 +1,21 @@
+package gcloud:secretmanager@0.1.0;
+
+interface types {
+  use gcloud:auth/types@0.1.0.{error as auth-error};
+
+  record secret-payload {
+    data: list<u8>,
+  }
+
+  variant error {
+    auth(auth-error),
+    request-failed(string),
+  }
+}
+
+interface secrets {
+  use types.{secret-payload, error};
+
+  access: func(name: string) -> result<secret-payload, error>;
+}
+
