@@ -19,8 +19,3 @@ interface token-source {
   get-token: func(scopes: list<string>) -> result<token, error>;
 }
 
-world token-provider {
-  import types;
-
-  export token-source;
-}

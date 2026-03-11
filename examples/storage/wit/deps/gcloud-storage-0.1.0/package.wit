@@ -19,10 +19,3 @@ interface buckets {
   list-buckets: func(project: string) -> result<list<bucket>, error>;
 }
 
-world storage-provider {
-  import gcloud:auth/types@0.1.0;
-  import gcloud:auth/token-source@0.1.0;
-  import types;
-
-  export buckets;
-}
