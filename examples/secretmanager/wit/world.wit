@@ -1,5 +1,5 @@
 package example:secretmanager@0.1.0;
 
 world app {
-    import gcloud:secretmanager/secrets@0.1.0;
+    import gcloud:secretmanager/secrets@0.2.0;
 }

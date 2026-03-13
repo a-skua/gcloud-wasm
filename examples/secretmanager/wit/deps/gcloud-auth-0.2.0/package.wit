@@ -1,4 +1,4 @@
-package gcloud:auth@0.1.0;
+package gcloud:auth@0.2.0;
 
 interface types {
   record token {
@@ -19,8 +19,3 @@ interface token-source {
   get-token: func(scopes: list<string>) -> result<token, error>;
 }
 
-world token-provider {
-  import types;
-
-  export token-source;
-}
