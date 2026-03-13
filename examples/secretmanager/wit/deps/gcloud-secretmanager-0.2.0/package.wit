@@ -7,6 +7,29 @@ interface types {
     data: list<u8>,
   }
 
+  record secret {
+    name: string,
+    create-time: option<string>,
+  }
+
+  enum secret-version-state {
+    state-unspecified,
+    enabled,
+    disabled,
+    destroyed,
+  }
+
+  record secret-version {
+    name: string,
+    state: secret-version-state,
+    create-time: option<string>,
+    destroy-time: option<string>,
+  }
+
+  enum replication {
+    automatic,
+  }
+
   variant error {
     auth(auth-error),
     request-failed(string),
@@ -14,8 +37,20 @@ interface types {
 }
 
 interface secrets {
-  use types.{secret-payload, error};
+  use types.{secret-payload, secret, secret-version, replication, error};
 
   access: func(name: string) -> result<secret-payload, error>;
+
+  list-secrets: func(parent: string) -> result<list<secret>, error>;
+
+  get-secret: func(name: string) -> result<secret, error>;
+
+  list-secret-versions: func(parent: string) -> result<list<secret-version>, error>;
+
+  add-secret-version: func(parent: string, payload: secret-payload) -> result<secret-version, error>;
+
+  create-secret: func(parent: string, secret-id: string, replication: replication) -> result<secret, error>;
+
+  delete-secret: func(name: string) -> result<_, error>;
 }
 
