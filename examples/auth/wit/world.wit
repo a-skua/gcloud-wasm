@@ -1,4 +1,4 @@
-package example:auth@0.1.0;
+package example:auth@0.2.0;
 
 world app {
     import gcloud:auth/token-source@0.2.0;

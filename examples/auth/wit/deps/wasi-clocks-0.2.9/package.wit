@@ -5,6 +5,10 @@ interface monotonic-clock {
 
   type duration = u64;
 
+  type instant = u64;
+
+  now: func() -> instant;
+
   subscribe-duration: func(when: duration) -> pollable;
 }
 
@@ -13,5 +17,7 @@ interface wall-clock {
     seconds: u64,
     nanoseconds: u32,
   }
+
+  now: func() -> datetime;
 }
 

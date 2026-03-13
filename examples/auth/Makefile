@@ -4,8 +4,8 @@ WIT := $(shell find wit -name "*.wit")
 
 PACKAGE_NAME := $(shell cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].name')
 
-AUTH_WASM_SRC := ghcr.io/a-skua/gcloud/auth:0.1.0
-AUTH_WASM := target/wasm32-wasip2/release/gcloud_auth_0_1_0.wasm
+AUTH_WASM_SRC := ghcr.io/a-skua/gcloud/auth:0.2.0
+AUTH_WASM := target/wasm32-wasip2/release/gcloud_auth_0_2_0.wasm
 EXAMPLE_WASM := target/wasm32-wasip2/release/$(PACKAGE_NAME).wasm
 COMPOSED_WASM := target/wasm32-wasip2/release/composed.wasm
 
@@ -14,7 +14,7 @@ build: $(COMPOSED_WASM)
 
 .PHONY: run
 run: $(COMPOSED_WASM)
-	wasmtime run --env HOME="$$HOME" --dir "$$HOME/.config/gcloud::$$HOME/.config/gcloud" -S http $(COMPOSED_WASM)
+	wasmtime run --env HOME="$$HOME" --dir "$$HOME/.config/gcloud" -S http $(COMPOSED_WASM)
 
 .PHONY: fmt
 fmt:

@@ -3,14 +3,12 @@ package wasi:filesystem@0.2.9;
 interface types {
   use wasi:io/streams@0.2.9.{input-stream, output-stream};
   use wasi:clocks/wall-clock@0.2.9.{datetime};
-  use wasi:io/streams@0.2.9.{error};
 
   resource descriptor {
     read-via-stream: func(offset: filesize) -> result<input-stream, error-code>;
     write-via-stream: func(offset: filesize) -> result<output-stream, error-code>;
     append-via-stream: func() -> result<output-stream, error-code>;
     get-flags: func() -> result<descriptor-flags, error-code>;
-    get-type: func() -> result<descriptor-type, error-code>;
     stat: func() -> result<descriptor-stat, error-code>;
     open-at: func(path-flags: path-flags, path: string, open-flags: open-flags, %flags: descriptor-flags) -> result<descriptor, error-code>;
     metadata-hash: func() -> result<metadata-hash-value, error-code>;
@@ -89,11 +87,6 @@ interface types {
     status-change-timestamp: option<datetime>,
   }
 
-  record metadata-hash-value {
-    lower: u64,
-    upper: u64,
-  }
-
   flags path-flags {
     symlink-follow,
   }
@@ -105,7 +98,10 @@ interface types {
     truncate,
   }
 
-  filesystem-error-code: func(err: borrow<error>) -> option<error-code>;
+  record metadata-hash-value {
+    lower: u64,
+    upper: u64,
+  }
 }
 
 interface preopens {

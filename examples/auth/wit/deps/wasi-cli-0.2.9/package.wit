@@ -1,19 +1,5 @@
 package wasi:cli@0.2.9;
 
-interface environment {
-  get-environment: func() -> list<tuple<string, string>>;
-}
-
-interface exit {
-  exit: func(status: result);
-}
-
-interface stdin {
-  use wasi:io/streams@0.2.9.{input-stream};
-
-  get-stdin: func() -> input-stream;
-}
-
 interface stdout {
   use wasi:io/streams@0.2.9.{output-stream};
 
@@ -24,6 +10,20 @@ interface stderr {
   use wasi:io/streams@0.2.9.{output-stream};
 
   get-stderr: func() -> output-stream;
+}
+
+interface stdin {
+  use wasi:io/streams@0.2.9.{input-stream};
+
+  get-stdin: func() -> input-stream;
+}
+
+interface environment {
+  get-environment: func() -> list<tuple<string, string>>;
+}
+
+interface exit {
+  exit: func(status: result);
 }
 
 interface terminal-input {
