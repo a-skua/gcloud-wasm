@@ -4,10 +4,10 @@ WIT := $(shell find wit -name "*.wit")
 
 PACKAGE_NAME := $(shell cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].name')
 
-AUTH_WASM_SRC := ghcr.io/a-skua/gcloud/auth:0.1.0
-AUTH_WASM := target/wasm32-wasip2/release/gcloud_auth_0_1_0.wasm
-STORAGE_WASM_SRC := ghcr.io/a-skua/gcloud/storage:0.1.0
-STORAGE_WASM := target/wasm32-wasip2/release/gcloud_storage_0_1_0.wasm
+AUTH_WASM_SRC := ghcr.io/a-skua/gcloud/auth:0.2.0
+AUTH_WASM := target/wasm32-wasip2/release/gcloud_auth_0_2_0.wasm
+STORAGE_WASM_SRC := ghcr.io/a-skua/gcloud/storage:0.2.0
+STORAGE_WASM := target/wasm32-wasip2/release/gcloud_storage_0_2_0.wasm
 EXAMPLE_WASM := target/wasm32-wasip2/release/$(PACKAGE_NAME).wasm
 COMPOSED_WASM := target/wasm32-wasip2/release/composed.wasm
 

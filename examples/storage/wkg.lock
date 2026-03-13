@@ -7,6 +7,6 @@ name = "gcloud:storage"
 registry = "ghcr.io"
 
 [[packages.versions]]
-requirement = "=0.1.0"
-version = "0.1.0"
-digest = "sha256:7cfd4ad9bfb3572eecf5b3394cd5fafcd01a4e8165c4d166ac916d1318966d1f"
+requirement = "=0.2.0"
+version = "0.2.0"
+digest = "sha256:fb00ae119e877a3126c84b6fe1e496b80e47bcc519a4d4137b375c671c4c8953"
