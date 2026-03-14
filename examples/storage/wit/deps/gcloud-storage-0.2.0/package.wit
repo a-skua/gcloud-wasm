@@ -5,11 +5,22 @@ interface types {
 
   record bucket {
     name: string,
+    location: option<string>,
+    storage-class: option<string>,
+    time-created: option<string>,
   }
 
   variant error {
     auth(auth-error),
     request-failed(string),
+  }
+
+  record object {
+    name: string,
+    bucket: string,
+    size: option<string>,
+    content-type: option<string>,
+    time-created: option<string>,
   }
 }
 
@@ -17,5 +28,23 @@ interface buckets {
   use types.{bucket, error};
 
   list-buckets: func(project: string) -> result<list<bucket>, error>;
+
+  get-bucket: func(name: string) -> result<bucket, error>;
+
+  create-bucket: func(project: string, name: string) -> result<bucket, error>;
+
+  delete-bucket: func(name: string) -> result<_, error>;
+}
+
+interface objects {
+  use types.{object, error};
+
+  list-objects: func(bucket: string, prefix: option<string>) -> result<list<object>, error>;
+
+  get-object: func(bucket: string, name: string) -> result<list<u8>, error>;
+
+  upload-object: func(bucket: string, name: string, data: list<u8>, content-type: string) -> result<object, error>;
+
+  delete-object: func(bucket: string, name: string) -> result<_, error>;
 }
 
