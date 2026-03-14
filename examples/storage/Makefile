@@ -11,12 +11,14 @@ STORAGE_WASM := target/wasm32-wasip2/release/gcloud_storage_0_2_0.wasm
 EXAMPLE_WASM := target/wasm32-wasip2/release/$(PACKAGE_NAME).wasm
 COMPOSED_WASM := target/wasm32-wasip2/release/composed.wasm
 
+GOOGLE_CLOUD_PROJECT ?= $(shell gcloud config get-value project)
+
 .PHONY: build
 build: $(COMPOSED_WASM)
 
 .PHONY: run
 run: $(COMPOSED_WASM)
-	wasmtime run --env HOME="$$HOME" --env GOOGLE_CLOUD_PROJECT="$$GOOGLE_CLOUD_PROJECT" --dir "$$HOME/.config/gcloud::$$HOME/.config/gcloud" -S http $(COMPOSED_WASM)
+	wasmtime run --env HOME --env GOOGLE_CLOUD_PROJECT=$(GOOGLE_CLOUD_PROJECT) --dir $$HOME/.config/gcloud -S http $(COMPOSED_WASM)
 
 .PHONY: fmt
 fmt:
