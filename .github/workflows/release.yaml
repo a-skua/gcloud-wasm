@@ -90,6 +90,7 @@ jobs:
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }} \
             gcloud_${{ matrix.component }}_wit.wasm
         env:
+          WKG_OCI_USERNAME: ${{ github.actor }}
           WKG_OCI_PASSWORD: ${{ github.token }}
 
       - run: |
@@ -97,6 +98,7 @@ jobs:
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}-component \
             gcloud_${{ matrix.component }}.wasm
         env:
+          WKG_OCI_USERNAME: ${{ github.actor }}
           WKG_OCI_PASSWORD: ${{ github.token }}
 
   release:
