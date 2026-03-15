@@ -1,7 +1,7 @@
-package gcloud:bigquery@0.2.0;
+package gcloud:bigquery@0.3.0;
 
 interface types {
-    use gcloud:auth/types@0.2.0.{error as auth-error};
+    use gcloud:auth/types@0.3.0.{error as auth-error};
 
     record dataset {
         id: option<string>,
@@ -105,7 +105,7 @@ interface tabledata {
 }
 
 world bigquery-provider {
-    import gcloud:auth/token-source@0.2.0;
+    import gcloud:auth/token-source@0.3.0;
     export datasets;
     export tables;
     export jobs;

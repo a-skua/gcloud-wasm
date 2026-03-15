@@ -1,7 +1,7 @@
-package gcloud:storage@0.2.0;
+package gcloud:storage@0.3.0;
 
 interface types {
-    use gcloud:auth/types@0.2.0.{error as auth-error};
+    use gcloud:auth/types@0.3.0.{error as auth-error};
 
     record bucket {
         name: string,
@@ -61,7 +61,7 @@ interface objects {
 }
 
 world storage-provider {
-    import gcloud:auth/token-source@0.2.0;
+    import gcloud:auth/token-source@0.3.0;
     export buckets;
     export objects;
 }

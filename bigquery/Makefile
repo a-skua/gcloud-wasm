@@ -17,3 +17,6 @@ clean:
 
 target/wasm32-wasip2/release/%.wasm: $(CONFIG) $(SRC) $(WIT)
 	cargo build --release --target wasm32-wasip2
+
+wit/deps: wit/*.wit wkg.toml
+	wkg wit fetch
