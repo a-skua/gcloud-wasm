@@ -1,0 +1,89 @@
+package gcloud:pubsub@0.2.0;
+
+interface types {
+    use gcloud:auth/types@0.2.0.{error as auth-error};
+
+    record topic {
+        name: string,
+    }
+
+    record subscription {
+        name: string,
+        topic: string,
+    }
+
+    record publish-message {
+        data: list<u8>,
+        attributes: list<tuple<string, string>>,
+    }
+
+    record received-message {
+        ack-id: string,
+        message-id: string,
+        data: list<u8>,
+        attributes: list<tuple<string, string>>,
+    }
+
+    variant error {
+        auth(auth-error),
+        request-failed(string),
+    }
+}
+
+interface topics {
+    use types.{topic, publish-message, error};
+
+    /// List topics in a project.
+    /// `project` is "projects/{project}"
+    list-topics: func(project: string) -> result<list<topic>, error>;
+
+    /// Get a topic.
+    /// `name` is "projects/{project}/topics/{topic}"
+    get-topic: func(name: string) -> result<topic, error>;
+
+    /// Create a topic.
+    /// `name` is "projects/{project}/topics/{topic}"
+    create-topic: func(name: string) -> result<topic, error>;
+
+    /// Delete a topic.
+    /// `name` is "projects/{project}/topics/{topic}"
+    delete-topic: func(name: string) -> result<_, error>;
+
+    /// Publish messages to a topic.
+    /// `topic` is "projects/{project}/topics/{topic}"
+    publish: func(topic: string, messages: list<publish-message>) -> result<list<string>, error>;
+}
+
+interface subscriptions {
+    use types.{subscription, received-message, error};
+
+    /// List subscriptions in a project.
+    /// `project` is "projects/{project}"
+    list-subscriptions: func(project: string) -> result<list<subscription>, error>;
+
+    /// Get a subscription.
+    /// `name` is "projects/{project}/subscriptions/{sub}"
+    get-subscription: func(name: string) -> result<subscription, error>;
+
+    /// Create a subscription.
+    /// `name` is "projects/{project}/subscriptions/{sub}", `topic` is "projects/{project}/topics/{topic}"
+    create-subscription: func(name: string, topic: string) -> result<subscription, error>;
+
+    /// Delete a subscription.
+    /// `name` is "projects/{project}/subscriptions/{sub}"
+    delete-subscription: func(name: string) -> result<_, error>;
+
+    /// Pull messages from a subscription.
+    /// `subscription` is "projects/{project}/subscriptions/{sub}"
+    pull: func(subscription: string, max-messages: u32) -> result<list<received-message>, error>;
+
+    /// Acknowledge messages.
+    /// `subscription` is "projects/{project}/subscriptions/{sub}"
+    acknowledge: func(subscription: string, ack-ids: list<string>) -> result<_, error>;
+}
+
+world pubsub-provider {
+    import gcloud:auth/token-source@0.2.0;
+    export topics;
+    export subscriptions;
+}

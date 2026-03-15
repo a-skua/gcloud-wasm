@@ -1,0 +1,113 @@
+package gcloud:bigquery@0.2.0;
+
+interface types {
+    use gcloud:auth/types@0.2.0.{error as auth-error};
+
+    record dataset {
+        id: option<string>,
+        dataset-reference: dataset-reference,
+        friendly-name: option<string>,
+        location: option<string>,
+    }
+
+    record dataset-reference {
+        project-id: string,
+        dataset-id: string,
+    }
+
+    record table {
+        id: option<string>,
+        table-reference: table-reference,
+        friendly-name: option<string>,
+        %type: option<string>,
+    }
+
+    record table-reference {
+        project-id: string,
+        dataset-id: string,
+        table-id: string,
+    }
+
+    /// A row of query results, represented as JSON string.
+    record query-response {
+        job-id: string,
+        job-complete: bool,
+        rows: list<row>,
+        total-rows: option<string>,
+    }
+
+    /// A row is a list of field values (as strings).
+    record row {
+        fields: list<field>,
+    }
+
+    record field {
+        value: option<string>,
+    }
+
+    record insert-all-response {
+        insert-errors: list<insert-error>,
+    }
+
+    record insert-error {
+        index: u32,
+        errors: list<error-detail>,
+    }
+
+    record error-detail {
+        reason: option<string>,
+        location: option<string>,
+        message: option<string>,
+    }
+
+    variant error {
+        auth(auth-error),
+        request-failed(string),
+    }
+}
+
+interface datasets {
+    use types.{dataset, error};
+
+    /// List datasets in a project.
+    list-datasets: func(project: string) -> result<list<dataset>, error>;
+
+    /// Get dataset metadata.
+    get-dataset: func(project: string, dataset-id: string) -> result<dataset, error>;
+}
+
+interface tables {
+    use types.{table, error};
+
+    /// List tables in a dataset.
+    list-tables: func(project: string, dataset-id: string) -> result<list<table>, error>;
+
+    /// Get table metadata.
+    get-table: func(project: string, dataset-id: string, table-id: string) -> result<table, error>;
+}
+
+interface jobs {
+    use types.{query-response, error};
+
+    /// Execute a SQL query.
+    query: func(project: string, sql: string) -> result<query-response, error>;
+
+    /// Get results for a query job.
+    get-query-results: func(project: string, job-id: string) -> result<query-response, error>;
+}
+
+interface tabledata {
+    use types.{insert-all-response, error};
+
+    /// Streaming insert rows into a table.
+    /// `rows` is a list of JSON strings, each representing a row.
+    insert-all: func(project: string, dataset-id: string, table-id: string, rows: list<string>) -> result<insert-all-response, error>;
+}
+
+world bigquery-provider {
+    import gcloud:auth/token-source@0.2.0;
+    export datasets;
+    export tables;
+    export jobs;
+    export tabledata;
+}

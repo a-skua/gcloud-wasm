@@ -1,0 +1,98 @@
+package gcloud:tasks@0.2.0;
+
+interface types {
+    use gcloud:auth/types@0.2.0.{error as auth-error};
+
+    record queue {
+        name: string,
+        state: option<queue-state>,
+    }
+
+    enum queue-state {
+        state-unspecified,
+        running,
+        paused,
+        disabled,
+    }
+
+    record task {
+        name: string,
+        schedule-time: option<string>,
+        create-time: option<string>,
+    }
+
+    record http-request {
+        url: string,
+        method: http-method,
+        headers: list<tuple<string, string>>,
+        body: list<u8>,
+    }
+
+    enum http-method {
+        method-unspecified,
+        post,
+        get,
+        head,
+        put,
+        delete,
+        patch,
+        options,
+    }
+
+    variant error {
+        auth(auth-error),
+        request-failed(string),
+    }
+}
+
+interface queues {
+    use types.{queue, error};
+
+    /// List queues.
+    /// `parent` is "projects/{project}/locations/{location}"
+    list-queues: func(parent: string) -> result<list<queue>, error>;
+
+    /// Get a queue.
+    /// `name` is "projects/{project}/locations/{location}/queues/{queue}"
+    get-queue: func(name: string) -> result<queue, error>;
+
+    /// Create a queue.
+    /// `parent` is "projects/{project}/locations/{location}", `queue-id` is the queue name
+    create-queue: func(parent: string, queue-id: string) -> result<queue, error>;
+
+    /// Delete a queue.
+    delete-queue: func(name: string) -> result<_, error>;
+
+    /// Pause a queue.
+    pause-queue: func(name: string) -> result<queue, error>;
+
+    /// Resume a queue.
+    resume-queue: func(name: string) -> result<queue, error>;
+}
+
+interface tasks {
+    use types.{task, http-request, error};
+
+    /// List tasks in a queue.
+    /// `parent` is "projects/{project}/locations/{location}/queues/{queue}"
+    list-tasks: func(parent: string) -> result<list<task>, error>;
+
+    /// Get a task.
+    get-task: func(name: string) -> result<task, error>;
+
+    /// Create a task with an HTTP request target.
+    /// `parent` is the queue resource name.
+    create-task: func(parent: string, http-request: http-request, schedule-time: option<string>) -> result<task, error>;
+
+    /// Delete a task.
+    delete-task: func(name: string) -> result<_, error>;
+
+    /// Force a task to run now.
+    run-task: func(name: string) -> result<task, error>;
+}
+
+world tasks-provider {
+    import gcloud:auth/token-source@0.2.0;
+    export queues;
+    export tasks;
+}
