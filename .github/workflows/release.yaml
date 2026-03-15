@@ -87,15 +87,11 @@ jobs:
 
       - run: |
           wkg oci push \
-            -u ${{ github.actor }} \
-            -p ${{ secrets.GITHUB_TOKEN }} \
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }} \
             gcloud_${{ matrix.component }}_wit.wasm
 
       - run: |
           wkg oci push \
-            -u ${{ github.actor }} \
-            -p ${{ secrets.GITHUB_TOKEN }} \
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}-component \
             gcloud_${{ matrix.component }}.wasm
 
@@ -122,5 +118,3 @@ jobs:
             --title "${VERSION}+${HASH}" \
             --generate-notes \
             gcloud_*.wasm
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
