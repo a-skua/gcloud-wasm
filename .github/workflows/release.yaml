@@ -54,7 +54,8 @@ jobs:
 
       - run: cargo binstall wkg@0.15.0 -y
 
-      - run: wkg wit build -d ${{ matrix.component }}/wit -o gcloud_${{ matrix.component }}_wit.wasm
+      - run: wkg wit build -o ../gcloud_${{ matrix.component }}_wit.wasm
+        working-directory: ${{ matrix.component }}
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
