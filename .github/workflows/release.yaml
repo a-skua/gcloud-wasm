@@ -90,14 +90,14 @@ jobs:
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }} \
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }} \
-            gcloud_${{ matrix.component }}.wasm
+            gcloud_${{ matrix.component }}_wit.wasm
 
       - run: |
           wkg oci push \
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}-wit \
-            gcloud_${{ matrix.component }}_wit.wasm
+            ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}-component \
+            gcloud_${{ matrix.component }}.wasm
 
   release:
     needs: build
