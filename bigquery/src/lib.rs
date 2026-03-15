@@ -7,7 +7,7 @@ wit_bindgen::generate!({
 use exports::gcloud::bigquery::datasets::{Dataset, Error as DatasetError, Guest as DatasetsGuest};
 use exports::gcloud::bigquery::jobs::{Error as JobError, Guest as JobsGuest, QueryResponse};
 use exports::gcloud::bigquery::tabledata::{
-    Error as TabledataError, Guest as TabledataGuest, InsertAllResponse,
+    Error as TabledataError, Guest as TabledataGuest, InsertRowsResponse,
 };
 use exports::gcloud::bigquery::tables::{Error as TableError, Guest as TablesGuest, Table};
 use gcloud::auth::token_source::get_token;
@@ -164,7 +164,7 @@ struct FieldJson {
 
 #[derive(serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct InsertAllResponseJson {
+struct InsertRowsResponseJson {
     #[serde(default)]
     insert_errors: Vec<InsertErrorJson>,
 }
@@ -251,8 +251,8 @@ fn convert_query_response(r: QueryResponseJson) -> QueryResponse {
     }
 }
 
-fn convert_insert_rows_response(r: InsertAllResponseJson) -> InsertAllResponse {
-    InsertAllResponse {
+fn convert_insert_rows_response(r: InsertRowsResponseJson) -> InsertRowsResponse {
+    InsertRowsResponse {
         insert_errors: r
             .insert_errors
             .into_iter()
@@ -320,7 +320,7 @@ impl TabledataGuest for Component {
         dataset_id: String,
         table_id: String,
         rows: Vec<String>,
-    ) -> Result<InsertAllResponse, TabledataError> {
+    ) -> Result<InsertRowsResponse, TabledataError> {
         wstd::runtime::block_on(insert_rows(&project, &dataset_id, &table_id, rows))
     }
 }
@@ -403,7 +403,7 @@ async fn insert_rows(
     dataset_id: &str,
     table_id: &str,
     rows: Vec<String>,
-) -> Result<InsertAllResponse, TabledataError> {
+) -> Result<InsertRowsResponse, TabledataError> {
     let auth = auth_header().map_err(TabledataError::Auth)?;
 
     let json_rows: Vec<serde_json::Value> = rows
@@ -425,7 +425,7 @@ async fn insert_rows(
     let contents = do_post(&url, &auth, "application/json", &body_bytes)
         .await
         .map_err(TabledataError::RequestFailed)?;
-    let res: InsertAllResponseJson =
+    let res: InsertRowsResponseJson =
         parse_json(&contents).map_err(TabledataError::RequestFailed)?;
     Ok(convert_insert_rows_response(res))
 }

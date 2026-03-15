@@ -45,7 +45,7 @@ interface types {
         value: option<string>,
     }
 
-    record insert-all-response {
+    record insert-rows-response {
         insert-errors: list<insert-error>,
     }
 
@@ -97,11 +97,11 @@ interface jobs {
 }
 
 interface tabledata {
-    use types.{insert-all-response, error};
+    use types.{insert-rows-response, error};
 
     /// Streaming insert rows into a table.
     /// `rows` is a list of JSON strings, each representing a row.
-    insert-rows: func(project: string, dataset-id: string, table-id: string, rows: list<string>) -> result<insert-all-response, error>;
+    insert-rows: func(project: string, dataset-id: string, table-id: string, rows: list<string>) -> result<insert-rows-response, error>;
 }
 
 world bigquery-provider {
