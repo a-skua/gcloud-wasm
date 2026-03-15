@@ -96,7 +96,7 @@ jobs:
           wkg oci push \
             -u ${{ github.actor }} \
             -p ${{ secrets.GITHUB_TOKEN }} \
-            ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}+wit \
+            ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}-wit \
             gcloud_${{ matrix.component }}_wit.wasm
 
   release:
