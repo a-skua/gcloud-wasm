@@ -89,11 +89,15 @@ jobs:
           wkg oci push \
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }} \
             gcloud_${{ matrix.component }}_wit.wasm
+        env:
+          WKG_OCI_PASSWORD: ${{ github.token }}
 
       - run: |
           wkg oci push \
             ghcr.io/a-skua/gcloud/${{ matrix.component }}:${{ inputs.version }}-component \
             gcloud_${{ matrix.component }}.wasm
+        env:
+          WKG_OCI_PASSWORD: ${{ github.token }}
 
   release:
     needs: build
@@ -108,7 +112,6 @@ jobs:
           merge-multiple: true
 
       - run: |
-          VERSION="${{ inputs.version }}"
           HASH=$(echo "${{ github.sha }}" | cut -c1-4)
           gh release create "${VERSION}" \
             --title "${VERSION}" \
@@ -118,3 +121,6 @@ jobs:
             --title "${VERSION}+${HASH}" \
             --generate-notes \
             gcloud_*.wasm
+        env:
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
