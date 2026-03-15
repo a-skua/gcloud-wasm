@@ -162,8 +162,8 @@ impl From<SecretVersionJson> for SecretVersion {
 // --- Guest implementation ---
 
 impl Guest for Component {
-    fn access(name: String) -> Result<SecretPayload, Error> {
-        wstd::runtime::block_on(access(&name))
+    fn access_secret_version(name: String) -> Result<SecretPayload, Error> {
+        wstd::runtime::block_on(access_secret_version(&name))
     }
 
     fn list_secrets(parent: String) -> Result<Vec<Secret>, Error> {
@@ -197,7 +197,7 @@ impl Guest for Component {
 
 // --- Async implementations ---
 
-async fn access(name: &str) -> Result<SecretPayload, Error> {
+async fn access_secret_version(name: &str) -> Result<SecretPayload, Error> {
     let url = format!("{BASE_URL}/{name}:access");
     let contents = do_get(&url).await?;
 

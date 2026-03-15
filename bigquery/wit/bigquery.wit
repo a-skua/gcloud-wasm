@@ -101,7 +101,7 @@ interface tabledata {
 
     /// Streaming insert rows into a table.
     /// `rows` is a list of JSON strings, each representing a row.
-    insert-all: func(project: string, dataset-id: string, table-id: string, rows: list<string>) -> result<insert-all-response, error>;
+    insert-rows: func(project: string, dataset-id: string, table-id: string, rows: list<string>) -> result<insert-all-response, error>;
 }
 
 world bigquery-provider {

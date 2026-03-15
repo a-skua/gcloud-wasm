@@ -251,7 +251,7 @@ fn convert_query_response(r: QueryResponseJson) -> QueryResponse {
     }
 }
 
-fn convert_insert_all_response(r: InsertAllResponseJson) -> InsertAllResponse {
+fn convert_insert_rows_response(r: InsertAllResponseJson) -> InsertAllResponse {
     InsertAllResponse {
         insert_errors: r
             .insert_errors
@@ -315,13 +315,13 @@ impl JobsGuest for Component {
 // --- Tabledata Guest implementation ---
 
 impl TabledataGuest for Component {
-    fn insert_all(
+    fn insert_rows(
         project: String,
         dataset_id: String,
         table_id: String,
         rows: Vec<String>,
     ) -> Result<InsertAllResponse, TabledataError> {
-        wstd::runtime::block_on(insert_all(&project, &dataset_id, &table_id, rows))
+        wstd::runtime::block_on(insert_rows(&project, &dataset_id, &table_id, rows))
     }
 }
 
@@ -398,7 +398,7 @@ async fn get_query_results(project: &str, job_id: &str) -> Result<QueryResponse,
 
 // --- Async implementations: Tabledata ---
 
-async fn insert_all(
+async fn insert_rows(
     project: &str,
     dataset_id: &str,
     table_id: &str,
@@ -427,5 +427,5 @@ async fn insert_all(
         .map_err(TabledataError::RequestFailed)?;
     let res: InsertAllResponseJson =
         parse_json(&contents).map_err(TabledataError::RequestFailed)?;
-    Ok(convert_insert_all_response(res))
+    Ok(convert_insert_rows_response(res))
 }
